@@ -31,13 +31,7 @@ mongoose.set("useCreateIndex", true);
 const userSchema = new mongoose.Schema ({
     email: String,
     password: String,
-    lastName: String,
-    firstName: String,
-    year: Number,
-    month: Number,
-    day: Number,
-    university: String,
-    hobbies: String
+    
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -71,21 +65,14 @@ app.get("/logout", function(req,res){
     res.redirect('/');
 });
 
-app.get("/unicomi", function(req,res){
+app.get("/dashboard", function(req,res){
     if(req.isAuthenticated()){
-        res.render("unicomi");
+        res.render("dashboard");
     }else {
         res.redirect("/signin");
     }
 })
 
-app.get("/createacc", function(req,res){
-    if(req.isAuthenticated()){
-        res.render("createacc");
-    }else {
-        res.redirect("/");
-    }
-})
 
 app.post("/signin", function(req,res){
     const user = new User({
@@ -99,7 +86,7 @@ app.post("/signin", function(req,res){
             console.log(err);
         }else{
             passport.authenticate("local")(req, res, function(){
-                res.redirect("/unicomi");
+                res.redirect("/dashboard");
             });
         }
     });
@@ -114,42 +101,11 @@ app.post("/signup", function(req,res){
             res.redirect("/signup");
         }else{
             passport.authenticate("local")(req,res, function(){
-                res.redirect("/createacc");
+                res.redirect("/dashboard");
             });
         }
     });
 
-    
-});
-
-app.post("/createacc", function(req,res){
-
-    const lastName = req.body.lastname;
-    const firstName = req.body.firstname;
-    const year = req.body.year;
-    const month = req.body.month;
-    const day = req.body.day;
-    const university = req.body.university;
-    const hobbies = req.body.hobbies;
-
-    User.findById(req.user.id, function(err,foundUser){
-        if(err){
-            console.log(err);
-        }else {
-            if (foundUser){
-                foundUser.lastname = lastName;
-                foundUser.firstname = firstName;
-                foundUser.year = year;
-                foundUser.day = day;
-                foundUser.month = month;
-                foundUser.university = university;
-                foundUser.hobbies = hobbies;
-                foundUser.save(function(){
-                    res.redirect("/unicomi");
-                });
-            }
-        }
-    });
     
 });
 
